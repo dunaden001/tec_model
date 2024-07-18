@@ -20,9 +20,9 @@ hot_side_sink_rj = 0.5  # °C/W
 
 t_cold = 5 + 273.15  # K
 
-currents = np.linspace(1, 5.0, 20)
+currents = np.linspace(1, 5.0, 20).tolist()
 
-t_hots = np.linspace(27 + 273.15, 55 + 273.15, 6)
+t_hots = np.linspace(27 + 273.15, 55 + 273.15, 6).tolist()
 
 
 CP353047.plot_operating_regions(
