@@ -1,0 +1,252 @@
+[tool.poetry]
+name = "tec_model"
+version = "0.0.1"
+description = "Tools for calculating TEC module operating points."
+license = "Proprietary"
+authors = ["Mike Reed <mikereed@mit.edu>"]
+maintainers = ["Mike Reed <mikereed@mit.edu>"]
+repository = "https://github.mit.edu/mikereed/testing_tools"
+readme = "README.md"
+# packages = [{ include = "drip_backend", from ="src" }]
+packages = [{ include = "*", from = "src" }]
+
+# [tool.poetry.scripts]
+# NOTE: Not used for now
+
+
+[tool.poetry.dependencies]
+# MARK: dependencies
+python = "^3.12"
+pydantic = "^2.8.2"
+matplotlib = "^3.9.1"
+
+[tool.poetry.group.dev.dependencies]
+# MARK: testing tools
+pytest = "^8.2.0"
+coverage = "^7.5.1"
+
+# MARK: types stubs
+
+# MARK: Linting tools
+ruff = "^0.4.1"
+pylint = "^3.1.0"
+mypy = "^1.9.0"
+bandit = "^1.7.8"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+########################################################################################
+# MARK: ruff
+########################################################################################
+
+[tool.ruff]
+src = ["./src"]
+pydocstyle.convention = "google"
+# Exclude a variety of commonly ignored directories.
+exclude = [
+    ".bzr",
+    ".direnv",
+    ".eggs",
+    ".git",
+    ".git-rewrite",
+    ".hg",
+    ".ipynb_checkpoints",
+    ".mypy_cache",
+    ".nox",
+    ".pants.d",
+    ".pyenv",
+    ".pytest_cache",
+    ".pytype",
+    ".ruff_cache",
+    ".svn",
+    ".tox",
+    ".venv",
+    ".vscode",
+    "__pypackages__",
+    "_build",
+    "buck-out",
+    "build",
+    "dist",
+    "node_modules",
+    "site-packages",
+    "venv",
+]
+
+# Same as Black.
+line-length = 88
+indent-width = 4
+
+# Assume Python 3.12
+target-version = "py312"
+
+[tool.ruff.lint]
+# Enable Pyflakes (`F`) and a subset of the pycodestyle (`E`)  codes by default.
+# Unlike Flake8, Ruff doesn't enable pycodestyle warnings (`W`) or
+# McCabe complexity (`C901`) by default.
+select = ["ALL"]
+# select = ["E4", "E7", "E9", "F", "W", "B", "C", "D", "I", "Q"]
+# NOTE: I'm not sure of the difference between select and extend-select yet but the ruff extension docs mention to add I to extend-select. Docs linked below:
+# https://docs.astral.sh/ruff/settings/#lint_extend-select
+extend-select = ["I"]
+# D203: 1 blank line required before class docstring ignored because it conflicts with"
+#       D211 and it's stupid.
+# D213: https://github.com/PyCQA/pydocstyle/issues/242#issuecomment-288166773
+# ANN101: Missing type annotation for self in method ignored because it's not bad
+#       practice. See link:
+#       https://github.com/astral-sh/ruff/issues/4396
+# ANN102: Same as above but for cls.
+# E203: Colons should not have any space before them. ignored because the black
+#       auto-formatter will put whitespace before colons in some array slicing instances
+#       and auto-fixes any other instances that E203 is meant to cover.
+# W503: line break before binary operator ignored because the black auto-formatter likes
+#       to split lines with binary operators just before the operator and I prefer to
+#       standardize to that instead of flake8's default.
+# COM812: Missing trailing comma in a list or tuple ignored because it's recommended to
+#       not have it with the formatter.
+ignore = ["D203", "D213", "ANN101", "ANN102", "COM812"]
+
+# Allow fix for all enabled rules (when `--fix`) is provided.
+fixable = ["ALL"]
+unfixable = []
+
+# Allow unused variables when underscore-prefixed.
+dummy-variable-rgx = "^(_+|(_+[a-zA-Z0-9_]*[a-zA-Z0-9]+?))$"
+
+[tool.ruff.lint.per-file-ignores]
+# This ignores errors for using 'assert' in tests
+"tests/*" = ["S101"]
+
+[tool.ruff.lint.flake8-bugbear]
+# Allow default arguments like, e.g., `data: List[str] = fastapi.Query(None)`.
+extend-immutable-calls = ["fastapi.Depends", "fastapi.Query", "fastapi.Path"]
+
+[tool.ruff.format]
+# Like Black, use double quotes for strings.
+quote-style = "double"
+
+# Like Black, indent with spaces, rather than tabs.
+indent-style = "space"
+
+# Like Black, respect magic trailing commas.
+skip-magic-trailing-comma = false
+
+# Like Black, automatically detect the appropriate line ending.
+line-ending = "auto"
+
+# Enable auto-formatting of code examples in docstrings. Markdown,
+# reStructuredText code/literal blocks and doctests are all supported.
+#
+# This is currently disabled by default, but it is planned for this
+# to be opt-out in the future.
+docstring-code-format = true
+
+# Set the line length limit used when formatting code snippets in
+# docstrings.
+#
+# This only has an effect when the `docstring-code-format` setting is
+# enabled.
+docstring-code-line-length = "dynamic"
+
+########################################################################################
+# MARK: pylint
+########################################################################################
+
+[tool.pylint.MAIN]
+fail-under = 9.0
+# Disabling fixme so that it doesn't hugely bring down the pylint score in exchange for
+#   tracking issues well.
+# Disabling consider-iterating-dictionary because I prefer to be explicit when iterating
+#   over the keys of a dictionary.
+disable = "fixme,consider-iterating-dictionary"
+max-line-length = 88
+output-format = "colorized"
+init-hook = 'import sys; sys.path.append("./src/");'
+# recursive = true
+
+ignore = [
+    "templates",
+    "__pycache__",
+    "docs/source/conf.py",
+    "old",
+    "build",
+    "dist",
+    ".git",
+    ".mpypy_cache",
+    ".pytest_cache",
+    "reference_files",
+    "reports",
+    ".venv",
+    ".vscode",
+    "Pipfile.lock",
+    "Pipfile",
+    "README.md",
+    "pytest.ini",
+    "Makefile",
+    "LICENSE",
+    "setup.py",
+]
+
+########################################################################################
+# MARK: pytest
+########################################################################################
+
+[tool.pytest.ini_options]
+addopts = "-ra --strict-markers --junitxml=reports/pytest_report.xml --durations=0"
+log_cli = true
+log_cli_level = "WARNING"
+testpaths = ["tests/"]
+
+########################################################################################
+# MARK: coverage
+########################################################################################
+
+[tool.coverage.run]
+branch = true
+command_line = "-m pytest"
+source = ["src/"]
+
+[tool.coverage.html]
+directory = "reports/coverage"
+
+[tool.coverage.report]
+fail_under = 90
+show_missing = true
+exclude_lines = [
+    "pragma: no cover",
+    "if TYPE_CHECKING:",
+    "if __name__ == .__main__.:",
+]
+
+[tool.coverage.xml]
+output = "reports/coverage_report.xml"
+
+########################################################################################
+# MARK: mypy
+########################################################################################
+
+[tool.mypy]
+strict = true
+# ignore_missing_imports = True
+# Report an error whenever a function returns a value that is inferred to have type Any.
+warn_return_any = true
+# Report any config options that are unused by mypy - helps to catch typos when making
+# changes to our config file).
+warn_unused_configs = true
+# Disallow untyped function definitions
+disallow_untyped_defs = true
+
+# Custom added paths
+# mypy_path = "$MYPY_CONFIG_FILE_DIR/src"
+
+# Per-module options:
+
+########################################################################################
+# MARK: bandit
+########################################################################################
+
+
+[tool.bandit.assert_used]
+skips = ['*_test.py', '*/test_*.py']

@@ -1,0 +1,125 @@
+// This file is an adaptation from the devcontainer.json in the standard python
+// devcontainer image definition.
+// https://github.com/devcontainers/images/blob/main/src/python
+{
+    // This is defining that the container should start by building from the dockerfile
+    // at ./Dockerfile. With a docker build, you can give it a root dir context which 
+    // usually (and in this case) just the main dir '.'
+    "build": {
+        "dockerfile": "./Dockerfile",
+        "context": "."
+    },
+    // "dockerComposeFile": "docker-compose.yml",
+    // "service": "backendservice",
+    "workspaceFolder": "/workspaces/${localWorkspaceFolderBasename}",
+    // "initializeCommand": "ls",
+    // This is adding in custom built features that add funcionality to the container
+    // after the docker is built.
+    // I'm fairly certain that the number after the colon is just a tag reference.
+    // In these cases, it's single number indicating the major version release and
+    // requesting the latest version in that major release. If ommitted, I think it
+    // presumes 'latest'.
+    // Find src and usage references/examples at this repo url:
+    // https://github.com/devcontainers/features/tree/main
+    "features": {
+        // https://github.com/devcontainers/features/tree/main/src/common-utils
+        "ghcr.io/devcontainers/features/common-utils:2": {
+            "installZsh": "true",
+            "username": "dev_user",
+            "userUid": "1000",
+            "userGid": "1000",
+            "upgradePackages": "true"
+        },
+        // https://github.com/devcontainers/features/tree/main/src/python
+        // Originally written with the object as "none" instead of {}, not sure if there is a functional difference but the README also suggests {}.
+        // "ghcr.io/devcontainers/features/python:1": "none",
+        // This uses the system python by default and installs a bunch of python tools
+        // using pipx. By default these tools are:
+        // flake8,autopep8,black,yapf,mypy,pydocstyle,pycodestyle,bandit,pipenv,
+        // virtualenv,pytest,pylint
+        "ghcr.io/devcontainers/features/python:1": {
+            "version": "none",
+            "toolsToInstall": "poetry"
+        },
+        // I'm not sure why the node feature was included in the python template so I'm
+        // commenting it out for now.
+        // "ghcr.io/devcontainers/features/node:1": "none",
+        // https://github.com/devcontainers/features/tree/main/src/git
+        // This is to ensure that you have a fully up to date version of git.
+        "ghcr.io/devcontainers/features/git:1": {
+            "version": "latest",
+            "ppa": "false"
+        },
+        // https://github.com/devcontainers/features/tree/main/src/aws-cli
+        "ghcr.io/devcontainers/features/aws-cli:1": {},
+        // https://github.com/devcontainers/features/tree/main/src/docker-in-docker
+        // This allows for us to create and work with docker containers inside the
+        // devcontainer. Look into docker-outside-of-docker maybe later, it could just
+        // save some space in the devcontainer I guess.
+        "ghcr.io/devcontainers/features/docker-in-docker:2": {}
+    },
+    // This is configuring tool-specific properties for VSCode, in this case setting
+    // the python interpreter path for running things like Intellisense etc.
+    "customizations": {
+        // Configure properties specific to VS Code.
+        "vscode": {
+            // Set *default* container specific settings.json vals on container create.
+            "settings": {
+                "editor.formatOnSave": true,
+                "editor.rulers": [
+                    88
+                ],
+                "python.defaultInterpreterPath": ".venv/bin/python",
+                "[python]": {
+                    "editor.defaultFormatter": "charliermarsh.ruff",
+                    "editor.formatOnSave": true,
+                    "editor.codeActionsOnSave": {
+                        "source.organizeImports": "explicit",
+                        "source.fixAll": "explicit"
+                    }
+                    // "editor.codeActionsOnSave": {
+                    //     "source.organizeImports.ruff": "explicit"
+                    //   }
+                },
+                "ruff.interpreter": [
+                    ".venv/bin/python"
+                ],
+                "pylint.interpreter": [
+                    ".venv/bin/python"
+                ],
+                "mypy-type-checker.interpreter": [
+                    ".venv/bin/python"
+                ],
+                "bandit.interpreter": [
+                    ".venv/bin/python"
+                ],
+                "bandit.args": [
+                    "--config=pyproject.toml"
+                ],
+            },
+            "extensions": [
+                "charliermarsh.ruff",
+                "ms-python.pylint",
+                "ms-python.mypy-type-checker",
+                "nwgh.bandit",
+                "redhat.vscode-yaml",
+                "ms-azuretools.vscode-docker",
+                "GitHub.copilot",
+                "tamasfe.even-better-toml"
+            ]
+        }
+    },
+    // Use 'forwardPorts' to make a list of ports inside the container available
+    // locally.
+    // NOTE: We aren't using this at the moment because VSCode seems to automatically
+    // forward ports that are detected.
+    // "forwardPorts": [],
+    // Use 'postCreateCommand' to run commands after the container is created.
+    // NOTE: This can't make use of caching like the Dockerfile can but it does have
+    // access to the container source code whereas the docker for a devcontainer
+    // doesn't.
+    "postCreateCommand": "./.devcontainer/postCreateCommand.sh",
+    // Set `remoteUser` to `root` to connect as root instead. More info:
+    // https://aka.ms/vscode-remote/containers/non-root.
+    "remoteUser": "dev_user"
+}
