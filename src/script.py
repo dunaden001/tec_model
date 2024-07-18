@@ -24,7 +24,9 @@ hot_side_sink_rj = 0.5  # °C/W
 
 t_cold = 5 + 273.15  # K
 
-fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2)  # type: ignore[misc]
+fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(  # type: ignore[misc]
+    2, 2, figsize=(15, 15)
+)
 ax1 = cast(Axes, ax1)
 ax2 = cast(Axes, ax2)
 ax3 = cast(Axes, ax3)
@@ -84,5 +86,7 @@ ax1.legend(handles=line_vs)
 ax2.legend(handles=line_qs)
 ax3.legend(handles=line_cops)
 ax4.legend(handles=line_cops)
+
+plt.savefig("CP353047.png")
 
 plt.show()
