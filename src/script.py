@@ -4,7 +4,6 @@
 from __future__ import annotations
 
 import logging
-from pathlib import Path
 
 # Library imports
 import numpy as np
@@ -31,7 +30,6 @@ CP353047.plot_operating_regions(
     t_hots=t_hots,
     currents=currents,
     hot_side_sink_rj=hot_side_sink_rj,
-    output_path=Path("CP353047.png"),
 )
 
 
@@ -40,5 +38,4 @@ CP354047.plot_operating_regions(
     t_hots=t_hots,
     currents=currents,
     hot_side_sink_rj=hot_side_sink_rj,
-    output_path=Path("CP354047.png"),
 )

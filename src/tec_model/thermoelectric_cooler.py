@@ -8,7 +8,8 @@ https://www.electronics-cooling.com/2008/08/a-simple-method-to-estimate-the-phys
 from __future__ import annotations
 
 import logging
-from typing import TYPE_CHECKING, cast
+from pathlib import Path
+from typing import cast
 
 # Library imports
 import matplotlib.pyplot as plt
@@ -18,8 +19,7 @@ from pydantic import BaseModel, Field
 # Local imports
 
 # Typing imports
-if TYPE_CHECKING:
-    from pathlib import Path
+
 
 logger = logging.getLogger(__name__)
 
@@ -152,7 +152,6 @@ class ThermoElectricCooler(BaseModel):
         currents: list[float],
         t_hots: list[float],
         hot_side_sink_rj: float,
-        output_path: Path,
     ) -> None:
         """Plot the operating regions of the TEC module."""
         fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(  # type: ignore[misc]
@@ -230,4 +229,5 @@ class ThermoElectricCooler(BaseModel):
         ax4.legend(handles=line_t_ambients)
         ax5.legend(handles=line_figure_of_merits)
 
+        output_path = Path(f"plots/{self.mfn}.png")
         plt.savefig(str(output_path.absolute()))
